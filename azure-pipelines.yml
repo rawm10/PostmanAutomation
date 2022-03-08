@@ -35,6 +35,7 @@ jobs:
       script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)\Results\JUnitResults.xml
   - task: PublishTestResults@2
     displayName: Publish Test Results
+    condition: succeededOrFailed()
     inputs:
       testResultsFiles: '**\*.xml'
       searchFolder: $(build.artifactstagingdirectory)
