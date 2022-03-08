@@ -29,14 +29,15 @@ jobs:
       customCommand: "install newman-reporter-junitfull -g"        
   - task: CmdLine@2
     displayName: Command Line Script    
-    continueOnError: true
-    inputs:
-      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure --reporters cli,junit --reporter-junit-export junit-report.xml
+    continueOnError: true    
+    inputs:      
+      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure --reporters cli,junit --reporter-junit-export $(build.artifactstagingdirectory)\Results\junit-report.xml
+
   - task: PublishTestResults@2
     displayName: 'Publish Test Results for postman'
     continueOnError: true
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/*.xml'
-      mergeTestResults: true
+      testResultsFiles: '**/*.xml'      
+      searchFolder: $(build.artifactstagingdirectory)
       failTaskOnFailedTests: false
