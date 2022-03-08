@@ -6,14 +6,30 @@
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: master
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: vs2019-win2016
+  steps:
+  - checkout: self
+  - task: Npm@1
+    displayName: npm custom
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: install -g newman
+  - task: CmdLine@2
+    displayName: Command Line Script
+    inputs:
+      script: newman run $(Build.SourcesDirectory)\Weather API.postman_collection.json -e Weather API.postman_environment.json --insecure -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)\Results\JunitResults.xml
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+      testResultsFiles: '**\*.xml'
+      searchFolder: $(build.artifactstagingdirectory)
