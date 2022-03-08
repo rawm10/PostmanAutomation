@@ -23,11 +23,6 @@ jobs:
   - task: Npm@1
     displayName: npm custom
     inputs:
-      command: "custom"
-      customCommand: "sudo apot-get install -y bash"
-  - task: Npm@1
-    displayName: npm custom
-    inputs:
       command: custom
       verbose: false      
       customCommand: install -g newman                
