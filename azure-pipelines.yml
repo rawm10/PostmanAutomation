@@ -23,14 +23,20 @@ jobs:
   - task: Npm@1
     displayName: npm custom
     inputs:
+      command: "custom"
+      customCommand: "sudo apot-get install -y bash"
+  - task: Npm@1
+    displayName: npm custom
+    inputs:
       command: custom
-      verbose: false
-      customCommand: install -g newman
+      verbose: false      
+      customCommand: install -g newman                
+
   - task: Npm@1
     displayName: npm custom
     inputs:
       command: "custom"
-      customCommand: "install newman-reporter-junitfull -g"  
+      customCommand: "install newman-reporter-junitfull -g"        
   - task: CmdLine@2
     displayName: Command Line Script
     inputs:
