@@ -1,0 +1,21 @@
+trigger:
+- master
+pool:
+  vmImage: ubuntu-latest
+steps:
+    - task: CmdLine@2
+      continueOnError: true
+      inputs:
+      
+        script: |
+         sudo apt-get install -y bash
+         sudo npm install newman --global
+         newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure  --reporters cli,junit --reporter-junit-export junit-report.xml         
+         sleep 40
+    - task: PublishTestResults@2
+      displayName: 'Publish Test Results for postman'
+      inputs:
+       testResultsFormat: 'JUnit'
+       testResultsFiles: '**/*.xml'
+       mergeTestResults: true
+       failTaskOnFailedTests: false
