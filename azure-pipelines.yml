@@ -5,6 +5,8 @@
 
 trigger:
 - main
+pool:
+  vmImage: ubuntu-latest
 
 resources:
   repositories:
@@ -32,10 +34,13 @@ jobs:
   - task: CmdLine@2
     displayName: Command Line Script
     inputs:
-      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)\Results\JUnitResults.xml
+      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure --reporters cli,junit --reporter-junit-export junit-report.xml         
+         sleep 40
   - task: PublishTestResults@2
-    displayName: Publish Test Results
-    condition: succeededOrFailed()
+    displayName: Publish Test Results    
     inputs:
+      testResultsFormat: 'JUnit'
       testResultsFiles: '**\*.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: false
       searchFolder: $(build.artifactstagingdirectory)
