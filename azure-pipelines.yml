@@ -48,7 +48,7 @@ jobs:
     inputs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**\*.xml'
-      searchFolder: '$(System.DefaultWorkingDirectory)' # Optional
+      searchFolder: '$(build.artifactstagingdirectory)' # Optional
       #mergeTestResults: false # Optional
       failTaskOnFailedTests: false
       #testRunTitle: # Optional
