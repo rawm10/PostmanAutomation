@@ -43,4 +43,16 @@ jobs:
       testResultsFiles: '**\*.xml'
       mergeTestResults: true
       failTaskOnFailedTests: false
+  
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**\*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)' # Optional
+      #mergeTestResults: false # Optional
+      failTaskOnFailedTests: false
+      #testRunTitle: # Optional
+      #buildPlatform: # Optional
+      #buildConfiguration: # Optional
+      #publishRunAttachments: true # Optional
       
