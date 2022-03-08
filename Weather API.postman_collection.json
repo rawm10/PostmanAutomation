@@ -1,0 +1,143 @@
+{
+	"info": {
+		"_postman_id": "a69bb035-08a1-4747-99e0-c4ac68e41e07",
+		"name": "Weather API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get capitals of all countries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Error should be false\", function (){\r",
+							"    pm.expect(jsonData.error).to.be.false;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Should have data\", function(){\r",
+							"    pm.expect(jsonData.data.length).to.gt(0);\r",
+							"});\r",
+							"\r",
+							"// store top 10 countries for testing purpose\r",
+							"let countries_capitals = jsonData.data.slice(0,10);\r",
+							"\r",
+							"// variable value must be JSON\r",
+							"pm.environment.set(\"countries_capitals\", JSON.stringify(countries_capitals));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://countriesnow.space/api/v0.1/countries/capital",
+					"protocol": "https",
+					"host": [
+						"countriesnow",
+						"space"
+					],
+					"path": [
+						"api",
+						"v0.1",
+						"countries",
+						"capital"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the weather of a city",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Name should be correct\", function (){\r",
+							"    pm.expect(jsonData.name).to.be.eql(pm.environment.get(\"city\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Should have data\", function(){\r",
+							"    pm.expect(jsonData.weather.length).to.be.gt(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// need to pass JSON data to objects in JavaScript\r",
+							"let countries_capitals = JSON.parse(pm.environment.get(\"countries_capitals\"));\r",
+							"\r",
+							"// get the first country from the array and remove it from the array as well\r",
+							"let country_capital = countries_capitals.shift();\r",
+							"let capital = country_capital.capital;\r",
+							"\r",
+							"// update the environment variable country which is used by the current request.\r",
+							"pm.environment.set(\"city\", capital);\r",
+							"\r",
+							"// update the countryies_capitals environment variable wit hthe new value.\r",
+							"pm.environment.set(\"countries_capitals\", JSON.stringify(countries_capitals));\r",
+							"\r",
+							"if(countries_capitals.length === 0){\r",
+							"    // when there are no cities anymore, stop the workflow.\r",
+							"    postman.setNextRequest(null);\r",
+							"}\r",
+							"else {\r",
+							"    // set the next request to itself to loop through all the cities.\r",
+							"    postman.setNextRequest(\"Get the weather of a city\");\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "api.openweathermap.org/data/2.5/weather?q={{city}}&appid={{API_KEY}}",
+					"host": [
+						"api",
+						"openweathermap",
+						"org"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city}}"
+						},
+						{
+							"key": "appid",
+							"value": "{{API_KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
