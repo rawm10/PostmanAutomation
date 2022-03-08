@@ -34,8 +34,7 @@ jobs:
   - task: CmdLine@2
     displayName: Command Line Script
     inputs:
-      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure --reporters cli,junit --reporter-junit-export junit-report.xml         
-         sleep 40
+      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure --reporters cli,junit --reporter-junit-export junit-report.xml
   - task: PublishTestResults@2
     displayName: Publish Test Results    
     inputs:
@@ -43,4 +42,4 @@ jobs:
       testResultsFiles: '**\*.xml'
       mergeTestResults: true
       failTaskOnFailedTests: false
-      searchFolder: $(build.artifactstagingdirectory)
+      
