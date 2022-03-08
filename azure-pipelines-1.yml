@@ -1,24 +1,40 @@
 trigger:
-- master
+- main
 pool:
   vmImage: ubuntu-latest
-steps:
-    - task: CmdLine@2
-      continueOnError: true
-      inputs:      
-        script: |
-         sudo apt-get install -y bash
-         sudo npm install newman --global         
-         sleep 40
 
-    - task: CmdLine@2
-      displayName: Command Line Script
-      inputs:
-        script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)\Results\JunitResults.xml    
-    - task: PublishTestResults@2
-      displayName: 'Publish Test Results for postman'
-      inputs:
-       testResultsFormat: 'JUnit'
-       testResultsFiles: '**/*.xml'
-       mergeTestResults: true
-       failTaskOnFailedTests: false
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: master
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: vs2017-win2016
+  steps:
+  - checkout: self
+  - task: Npm@1
+    displayName: npm custom
+    inputs:
+      command: custom
+      verbose: false      
+      customCommand: install -g newman                
+
+  - task: Npm@1
+    displayName: npm custom
+    inputs:
+      command: "custom"
+      customCommand: "install newman-reporter-junitfull -g"        
+  - task: CmdLine@2
+    displayName: Command Line Script
+    inputs:
+      script: newman run $(Build.SourcesDirectory)\WeatherAPI.postman_collection.json -e WeatherAPI.postman_environment.json --insecure -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)\Results\JunitResults.xml    
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results for postman'
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/*.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: false
